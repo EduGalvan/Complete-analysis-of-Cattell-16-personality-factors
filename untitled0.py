@@ -17,28 +17,16 @@ import matplotlib.pyplot as plt
 from IPython.display import clear_output
 from six.moves import urllib
 from keras import callbacks
-
 import tensorflow.compat.v2.feature_column as fc
-
 import tensorflow as tf
 !pip install -q sklearn
 
 dftrain = pd.read_csv('/content/16pfb.csv') # training data
-dfeval = pd.read_csv('/content/16pfb.csv')
 dftrain.drop(['country'], axis=1, inplace = True)
-dfeval.drop(['country'], axis=1, inplace = True)
-
-y_train = dftrain.pop('gender')
-y_eval = dfeval.pop('gender')
 
 dftrain["gender"] = dftrain["gender"].apply(lambda x: 0 if x==1 else 1) #1 if "Male", 2 if "Female, 3 if "Other" (0 if missed).
 dfeval["gender"] = dfeval["gender"].apply(lambda x: 0 if x==1 else 1)
 
-dftrain = dftrain.replace(0, pd.np.nan).dropna(axis=0, how='any', subset=columns).fillna(0).astype(int)
-
-columns = dftrain.columns
-
-dftrain.describe()
 
 for x in dftrain.index:
   if dftrain.loc[x, "age"] > 75:
@@ -123,31 +111,6 @@ dftrain['P10'].replace({5: 1, 4 : 2, 2 : 4, 1: 5}, inplace=True)
 dftrain['P9'].replace({5: 1, 4 : 2, 2 : 4, 1: 5}, inplace=True)
 dftrain['P8'].replace({5: 1, 4 : 2, 2 : 4, 1: 5}, inplace=True)
 
-print(dftrain['H10'][100])
-
-pd.concat([dftrain], axis=1).groupby('gender').H_mean.mean().plot(kind='barh')
-
-#dftrain.A_mean.gropuby("gender").hist(bins=20)
-pd.concat([dftrain], axis=1).groupby('gender').F1.mean().plot(kind='barh')
-
-pd.concat([dftrain], axis=1).groupby('gender').H_mean.mean().plot(kind='barh')
-plt.title('Diferencias en sensibilidad por género')
-
-pd.concat([dftrain], axis=1).groupby('gender').D_mean.mean().plot(kind='barh')
-plt.title('Diferencias Dominancia por género')
-
-dftrain.E_mean.hist(bins=20)
-plt.title('Liveliness')
-plt.xlabel('Puntuación directa')
-plt.ylabel('Frecuencia')
-
-dftrain['B_mean'].min()
-
-dftrain.H_mean.hist(bins=20)
-plt.title('Sensitivity')
-plt.xlabel('Puntuación directa')
-plt.ylabel('Frecuencia')
-
 dftrain["A_mean"] = (dftrain["A1"] + dftrain["A2"] + dftrain["A3"] + dftrain["A4"] + dftrain["A5"] + dftrain["A6"] + dftrain["A7"] + dftrain["A8"] + dftrain["A9"] + dftrain["A10"])/10
 dftrain["B_mean"] = (dftrain["B1"] + dftrain["B2"] + dftrain["B3"] + dftrain["B4"] + dftrain["B5"] + dftrain["B6"] + dftrain["B7"] + dftrain["B8"] + dftrain["B9"] + dftrain["B10"] + dftrain["B11"] + dftrain["B12"] + dftrain["B13"])/13
 dftrain["C_mean"] = (dftrain["C1"] + dftrain["C2"] + dftrain["C3"] + dftrain["C4"] + dftrain["C5"] + dftrain["C6"] + dftrain["C7"] + dftrain["C8"] + dftrain["C9"] + dftrain["C10"])/10
@@ -164,47 +127,6 @@ dftrain["M_mean"] = (dftrain["M1"] + dftrain["M2"] + dftrain["M3"] + dftrain["M4
 dftrain["N_mean"] = (dftrain["N1"] + dftrain["N2"] + dftrain["N3"] + dftrain["N4"] + dftrain["N5"] + dftrain["N6"] + dftrain["N7"] + dftrain["N8"] + dftrain["N9"] + dftrain["N10"])/10
 dftrain["O_mean"] = (dftrain["O1"] + dftrain["O2"] + dftrain["O3"] + dftrain["O4"] + dftrain["O5"] + dftrain["O6"] + dftrain["O7"] + dftrain["O8"] + dftrain["O9"] + dftrain["O10"])/10
 dftrain["P_mean"] = (dftrain["P1"] + dftrain["P2"] + dftrain["P3"] + dftrain["P4"] + dftrain["P5"] + dftrain["P6"] + dftrain["P7"] + dftrain["P8"] + dftrain["P9"] + dftrain["P10"])/10
-
-
-
-dfeval["A_mean"] = (dfeval["A1"] + dfeval["A2"] + dfeval["A3"] + dfeval["A4"] + dfeval["A5"] + dfeval["A6"] + dfeval["A7"] + dfeval["A8"] + dfeval["A9"] + dfeval["A10"])/10
-dfeval["B_mean"] = (dfeval["B1"] + dfeval["B2"] + dfeval["B3"] + dfeval["B4"] + dfeval["B5"] + dfeval["B6"] + dfeval["B7"] + dfeval["B8"] + dfeval["B9"] + dfeval["B10"] + dfeval["B11"] + dfeval["B12"] + dfeval["B13"])/13
-dfeval["C_mean"] = (dfeval["C1"] + dfeval["C2"] + dfeval["C3"] + dfeval["C4"] + dfeval["C5"] + dfeval["C6"] + dfeval["C7"] + dfeval["C8"] + dfeval["C9"] + dfeval["C10"])/10
-dfeval["D_mean"] = (dfeval["D1"] + dfeval["D2"] + dfeval["D3"] + dfeval["D4"] + dfeval["D5"] + dfeval["D6"] + dfeval["D7"] + dfeval["D8"] + dfeval["D9"] + dfeval["D10"])/10
-dfeval["E_mean"] = (dfeval["E1"] + dfeval["E2"] + dfeval["E3"] + dfeval["E4"] + dfeval["E5"] + dfeval["E6"] + dfeval["E7"] + dfeval["E8"] + dfeval["E9"] + dfeval["E10"])/10
-dfeval["F_mean"] = (dfeval["F1"] + dfeval["F2"] + dfeval["F3"] + dfeval["F4"] + dfeval["F5"] + dfeval["F6"] + dfeval["F7"] + dfeval["F8"] + dfeval["F9"] + dfeval["F10"])/10
-dfeval["G_mean"] = (dfeval["G1"] + dfeval["G2"] + dfeval["G3"] + dfeval["G4"] + dfeval["G5"] + dfeval["G6"] + dfeval["G7"] + dfeval["G8"] + dfeval["G9"] + dfeval["G10"])/10
-dfeval["H_mean"] = (dfeval["H1"] + dfeval["H2"] + dfeval["H3"] + dfeval["H4"] + dfeval["H5"] + dfeval["H6"] + dfeval["H7"] + dfeval["H8"] + dfeval["H9"] + dfeval["H10"])/10
-dfeval["I_mean"] = (dfeval["I1"] + dfeval["I2"] + dfeval["I3"] + dfeval["I4"] + dfeval["I5"] + dfeval["I6"] + dfeval["I7"] + dfeval["I8"] + dfeval["I9"] + dfeval["I10"])/10
-dfeval["J_mean"] = (dfeval["J1"] + dfeval["J2"] + dfeval["J3"] + dfeval["J4"] + dfeval["J5"] + dfeval["J6"] + dfeval["J7"] + dfeval["J8"] + dfeval["J9"] + dfeval["J10"])/10
-dfeval["K_mean"] = (dfeval["K1"] + dfeval["K2"] + dfeval["K3"] + dfeval["K4"] + dfeval["K5"] + dfeval["K6"] + dfeval["K7"] + dfeval["K8"] + dfeval["K9"] + dfeval["K10"])/10
-dfeval["L_mean"] = (dfeval["L1"] + dfeval["L2"] + dfeval["L3"] + dfeval["L4"] + dfeval["L5"] + dfeval["L6"] + dfeval["L7"] + dfeval["L8"] + dfeval["L9"] + dfeval["L10"])/10
-dfeval["M_mean"] = (dfeval["M1"] + dfeval["M2"] + dfeval["M3"] + dfeval["M4"] + dfeval["M5"] + dfeval["M6"] + dfeval["M7"] + dfeval["M8"] + dfeval["M9"] + dfeval["M10"])/10
-dfeval["N_mean"] = (dfeval["N1"] + dfeval["N2"] + dfeval["N3"] + dfeval["N4"] + dfeval["N5"] + dfeval["N6"] + dfeval["N7"] + dfeval["N8"] + dfeval["N9"] + dfeval["N10"])/10
-dfeval["O_mean"] = (dfeval["O1"] + dfeval["O2"] + dfeval["O3"] + dfeval["O4"] + dfeval["O5"] + dfeval["O6"] + dfeval["O7"] + dfeval["O8"] + dfeval["O9"] + dfeval["O10"])/10
-dfeval["P_mean"] = (dfeval["P1"] + dfeval["P2"] + dfeval["P3"] + dfeval["P4"] + dfeval["P5"] + dfeval["P6"] + dfeval["P7"] + dfeval["P8"] + dfeval["P9"] + dfeval["P10"])/10
-
-dftrain.head()
-
-fig, ax = plt.subplots(figsize=(12, 12))
-
-
-sns.heatmap(corr, linewidths= 1, annot= True, square= True, fmt= ".1f", center= 0.08, mask = mask)
-
-corr = dfcorr.corr(method = "pearson")
-mask = np.triu(corr)
-corr.index = ['Warmth (A)', 'Reasoning (B)', 'Emotional Stability (C)', 'Dominance (E)', 'Liveliness (F)', 'Rule-Consciousness (G)', 'Social Boldness (H)', 'Sensitivity (I)', 'Vigilance (L)', 'Abstractedness (M)', 'Privateness (N)', 'Apprehension (0)', 'Openness to Change (Q1)', 'Self-Reliance (Q2)', 'Perfectionism (Q3)', 'Tension (Q4)' ]
-corr.columns = ['Warmth (A)', 'Reasoning (B)', 'Emotional Stability (C)', 'Dominance (E)', 'Liveliness (F)', 'Rule-Consciousness (G)', 'Social Boldness (H)', 'Sensitivity (I)', 'Vigilance (L)', 'Abstractedness (M)', 'Privateness (N)', 'Apprehension (0)', 'Openness to Change (Q1)', 'Self-Reliance (Q2)', 'Perfectionism (Q3)', 'Tension (Q4)' ]
-
-dfcorr = dftrain.drop(dftrain.iloc[:, 0:168], axis = 1)
-
-print(dfcorr)
-
-dfcorr.index = ['Warmth (A)', 'Reasoning (B)', 'Emotional Stability (C)', 'Dominance (E)', 'Liveliness (F)', 'Rule-Consciousness (G)', 'Social Boldness (H)', 'Sensitivity (I)', 'Vigilance (L)', 'Abstractedness (M)', 'Privateness (N)', 'Apprehension (0)', 'Openness to Change (Q1)', 'Self-Reliance (Q2)', 'Perfectionism (Q3)', 'Tension (Q4)' ]
-
-dftrain.to_csv('datos definitivos.csv')
-
-df_correlation.to_csv("Datos Definitivos Dimensiones.csv")
 
 dftrain = dftrain[
     (dftrain['A_mean'] <= dftrain['A_mean'].quantile(0.975)) &
@@ -266,100 +188,45 @@ dftrain = dftrain[
     (dftrain['P_mean'] <= dftrain['P_mean'].quantile(0.975)) &
     (dftrain['P_mean'] >= dftrain['P_mean'].quantile(0.025))]
 
-dfeval = dfeval[
-    (dfeval['A_mean'] <= dfeval['A_mean'].quantile(0.975)) &
-    (dfeval['A_mean'] >= dfeval['A_mean'].quantile(0.025))]
-dfeval = dfeval[
-    (dfeval['B_mean'] <= dfeval['B_mean'].quantile(0.975)) &
-    (dfeval['B_mean'] >= dfeval['B_mean'].quantile(0.025))]
 
-dfeval = dfeval[
-    (dfeval['C_mean'] <= dfeval['C_mean'].quantile(0.975)) &
-    (dfeval['C_mean'] >= dfeval['C_mean'].quantile(0.025))]
 
-dfeval = dfeval[
-    (dfeval['D_mean'] <= dfeval['D_mean'].quantile(0.975)) &
-    (dfeval['D_mean'] >= dfeval['D_mean'].quantile(0.025))]
+#OBSERVACION DE LOS DATOS
+pd.concat([dftrain], axis=1).groupby('gender').H10_mean.mean().plot(kind='barh')
 
-dfeval = dfeval[
-    (dfeval['E_mean'] <= dfeval['E_mean'].quantile(0.975)) &
-    (dfeval['E_mean'] >= dfeval['E_mean'].quantile(0.025))]
-  
-dfeval = dfeval[
-    (dfeval['F_mean'] <= dfeval['F_mean'].quantile(0.975)) &
-    (dfeval['F_mean'] >= dfeval['F_mean'].quantile(0.025))]
-  
-dfeval = dfeval[
-    (dfeval['G_mean'] <= dfeval['G_mean'].quantile(0.975)) &
-    (dfeval['G_mean'] >= dfeval['G_mean'].quantile(0.025))]
+pd.concat([dftrain], axis=1).groupby('gender').F1.mean().plot(kind='barh')
 
-dfeval = dfeval[
-    (dfeval['H_mean'] <= dfeval['H_mean'].quantile(0.975)) &
-    (dfeval['H_mean'] >= dfeval['H_mean'].quantile(0.025))]
-dfeval = dfeval[
-    (dfeval['I_mean'] <= dfeval['I_mean'].quantile(0.975)) &
-    (dfeval['I_mean'] >= dfeval['I_mean'].quantile(0.025))]
-dfeval = dfeval[
-    (dfeval['J_mean'] <= dfeval['J_mean'].quantile(0.975)) &
-    (dfeval['J_mean'] >= dfeval['J_mean'].quantile(0.025))]
-dfeval = dfeval[
-    (dfeval['K_mean'] <= dfeval['K_mean'].quantile(0.975)) &
-    (dfeval['K_mean'] >= dfeval['K_mean'].quantile(0.025))]
+pd.concat([dftrain], axis=1).groupby('gender').H_mean.mean().plot(kind='barh')
+plt.title('Diferencias en sensibilidad por género')
 
-dfeval = dfeval[
-    (dfeval['L_mean'] <= dfeval['L_mean'].quantile(0.975)) &
-    (dfeval['L_mean'] >= dfeval['L_mean'].quantile(0.025))]
+pd.concat([dftrain], axis=1).groupby('gender').D_mean.mean().plot(kind='barh')
+plt.title('Diferencias Dominancia por género')
 
-dfeval = dfeval[
-    (dfeval['M_mean'] <= dfeval['M_mean'].quantile(0.975)) &
-    (dfeval['M_mean'] >= dfeval['M_mean'].quantile(0.025))]
+dftrain.E_mean.hist(bins=20)
+plt.title('Liveliness')
+plt.xlabel('Puntuación directa')
+plt.ylabel('Frecuencia')
 
-dfeval = dfeval[
-    (dfeval['N_mean'] <= dfeval['N_mean'].quantile(0.975)) &
-    (dfeval['N_mean'] >= dfeval['N_mean'].quantile(0.025))]
+dftrain['B_mean'].min()
 
-dfeval = dfeval[
-    (dfeval['O_mean'] <= dfeval['O_mean'].quantile(0.975)) &
-    (dfeval['O_mean'] >= dfeval['O_mean'].quantile(0.025))]
-dfeval = dfeval[
-    (dfeval['P_mean'] <= dfeval['P_mean'].quantile(0.975)) &
-    (dfeval['P_mean'] >= dfeval['P_mean'].quantile(0.025))]
+dftrain.H_mean.hist(bins=20)
+plt.title('Sensitivity')
+plt.xlabel('Puntuación directa')
+plt.ylabel('Frecuencia')
+
+#CORRELATION MAP
+
+
+dfcorr = dftrain.drop(dftrain.iloc[:, 0:168], axis = 1) #NOS QUEDAMOS SOLO CON LAS PUNTUACIONES MEDIAS DE TODAS LAS DIMESNIONES Y DESECHAMOS EL RESTO DE ITEM
+
+fig, ax = plt.subplots(figsize=(12, 12))
+corr = dfcorr.corr(method = "pearson")
+mask = np.triu(corr)
+corr.index = ['Warmth (A)', 'Reasoning (B)', 'Emotional Stability (C)', 'Dominance (E)', 'Liveliness (F)', 'Rule-Consciousness (G)', 'Social Boldness (H)', 'Sensitivity (I)', 'Vigilance (L)', 'Abstractedness (M)', 'Privateness (N)', 'Apprehension (0)', 'Openness to Change (Q1)', 'Self-Reliance (Q2)', 'Perfectionism (Q3)', 'Tension (Q4)' ]
+corr.columns = ['Warmth (A)', 'Reasoning (B)', 'Emotional Stability (C)', 'Dominance (E)', 'Liveliness (F)', 'Rule-Consciousness (G)', 'Social Boldness (H)', 'Sensitivity (I)', 'Vigilance (L)', 'Abstractedness (M)', 'Privateness (N)', 'Apprehension (0)', 'Openness to Change (Q1)', 'Self-Reliance (Q2)', 'Perfectionism (Q3)', 'Tension (Q4)' ]
+
+sns.heatmap(corr, linewidths= 1, annot= True, square= True, fmt= ".1f", center= 0.08, mask = mask)
+
 
 dftrain.head()
 
 sns.scatterplot(x= dftrain["N_mean"], y= dftrain["D_mean"])
-
-NUMERIC_COLUMNS = ['A_mean','B_mean', 'C_mean', "D_mean", 'E_mean', 'F_mean', 'G_mean', 'H_mean', 'I_mean', 'J_mean', 'K_mean', 'L_mean', 'M_mean','N_mean', 'O_mean', 'P_mean']
-
-feature_columns = []
-
-for feature_name in NUMERIC_COLUMNS:
-  feature_columns.append(tf.feature_column.numeric_column(feature_name, dtype=tf.float32))
-
-print(dftrain['A_mean'][90])
-
-def make_input_fn(data_df, label_df, num_epochs=10, shuffle=True, batch_size=32):
-  def input_function():
-    ds = tf.data.Dataset.from_tensor_slices((dict(data_df), label_df))
-    if shuffle:
-      ds = ds.shuffle(1000)
-    ds = ds.batch(batch_size).repeat(num_epochs)
-    return ds
-  return input_function
-
-train_input_fn = make_input_fn(dftrain, y_train)
-eval_input_fn = make_input_fn(dfeval, y_eval, num_epochs=1, shuffle=False)
-
-linear_est = tf.estimator.LinearClassifier(feature_columns=feature_columns)
-linear_est.train(train_input_fn)
-result = linear_est.evaluate(eval_input_fn)
-
-
-
-clear_output()
-print(result)
-
-result = list(linear_est.predict(eval_input_fn))
-print(result[10]['probabilities'][0])
-print(dfeval.loc[10])
-print(y_eval.loc[10])
