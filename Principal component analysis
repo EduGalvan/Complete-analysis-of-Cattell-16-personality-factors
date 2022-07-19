@@ -1,0 +1,68 @@
+!pip install sklearn
+!pip install bioinfokit
+%matplotlib inline
+from mpl_toolkits.mplot3d import Axes3D
+plt.rcParams['figure.figsize'] = (16, 9)
+plt.style.use('ggplot')
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+from bioinfokit.analys import get_data
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sb
+from sklearn.cluster import KMeans
+from sklearn.metrics import pairwise_distances_argmin_min
+from sklearn.metrics import silhouette_samples, silhouette_score
+
+df = pd.read_csv('/content/drive/MyDrive/Datos Definitivos Dimensiones.csv')
+df.drop(['age',	'gender',	'accuracy',	'source',	'elapsed'], axis=1, inplace=True)
+df.drop(['Unnamed: 0'], axis=1, inplace=True)
+df.columns = ['Calidez (A)', 'Razonamiento (B)', 'Estabilidad emocional (C)', 'Dominancia (E)', 'Vivacidad (F)', 'Conciencia de las reglas (G)', 'Audacia social  (H)', 'Sensibilidad (I)', 'Vigilancia (L)', 'Abstracción (M)', 'Privacidad (N)', 'Aprehensión (0)', 'Apertura al cambio (Q1)', 'Autosuficiencia (Q2)', 'Perfeccionismo (Q3)', 'Tensión (Q4)' ]
+
+
+X_std = StandardScaler().fit_transform(df)
+pca = PCA(n_components=6)
+principalComponents = pca.fit_transform(X_std)
+# Plot the explained variances
+features = range(pca.n_components_)
+plt.bar(features, pca.explained_variance_ratio_, color='black')
+plt.xlabel('PCA features')
+plt.ylabel('variance %')
+plt.xticks(features)
+# Save components to a DataFrame
+PCA_components = pd.DataFrame(principalComponents)
+
+from pandas.core.common import random_state
+kmeans_per_k = [KMeans(n_clusters= k, random_state= 42).fit(X) for k in range(1, 20)]
+
+silhouettescore = [silhouette_score(X, model.labels_) for model in kmeans_per_k[1:]]
+
+silhouettescore
+
+plt.scatter(PCA_components[0], PCA_components[1], alpha=.1, color='black')
+plt.xlabel('PCA 1')
+plt.ylabel('PCA 2')
+
+PCA_components.columns = ['0', '1', '2', '3', '4', '5']
+X = np.array(PCA_components[['0', '1', '2', '3', '4', '5']])
+X.shape
+kmeans = KMeans(n_clusters=2).fit(X)
+centroids = kmeans.cluster_centers_
+print(centroids)
+labels = kmeans.predict(X)
+# Getting the cluster centers
+C = kmeans.cluster_centers_
+colores=[ 'blue', 'green']
+asignar=[]
+for row in labels:
+    asignar.append(colores[row])
+ 
+fig = plt.figure()
+ax = Axes3D(fig)
+ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=asignar,s=60)
+ax.scatter(C[:, 0], C[:, 1], C[:, 2], marker='*', c=colores, s=1000)
