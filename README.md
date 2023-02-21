@@ -1,4 +1,4 @@
-# 16PF_CATTELL
+# Complete analysis of Cattell 16 personality factors
 En este proyecto utilizo datos psicométricos del test de Cattell de la personalidad (obtenido vía https://openpsychometrics.org/_rawdata/) 
 
 Sobre esta muestra de aproximadamente 50.000 perosnas se realizan las técnicas pertinentes para, en última instancia, poder crear un modelo de Machine Learning capaz de predecir el genero de una persona basandonos unicamente en las puntuaciones obtenidas en el Test.
